@@ -8,6 +8,9 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    permissions:
+       id-token: write
+       contents: read
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -16,14 +19,16 @@ jobs:
     - name: Install dependencies
       run: npm ci
    
-    - name: Azure login
+    - name: Azure Login
       uses: azure/login@v2
       with:
-          client-id: ${{ secrets.AZ_SUBSCRIPTION  }}
+         client-id: ${{ secrets.AZURE_CLIENT_ID }}
+         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Run Playwright tests
       env: 
           PLAYWRIGHT_SERVICE_URL: ${{ vars.PLAYWRIGHT_SERVICE_URL }}
-      run:  npx playwright test --config=playwright.service.config.js --workers=4 
+      run: npx playwright test --config=playwright.service.config.js --workers=4 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
