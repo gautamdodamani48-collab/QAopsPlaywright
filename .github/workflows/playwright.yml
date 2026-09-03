@@ -17,10 +17,12 @@ jobs:
       run: npm ci
    
     - name: Azure login
-      uses: azure/login@v3
+      uses: azure/login@v3 
       with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
     - name: Run Playwright tests
+      env: 
+          PLAYWRIGHT_SERVICE_URL: ${{ vars.PLAYWRIGHT_SERVICE_URL }}
       run:  npx playwright test --config=playwright.service.config.js --workers=4 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
